@@ -40,7 +40,7 @@ public class CategoriesController
 
     // the url to return all products in category 1 would look like this
     // https://localhost:8080/categories/1/products
-    @GetMapping("{categoryId}/products")
+    @GetMapping("{id}/products")
     public List<Product> getProductsById(@PathVariable int categoryId) {
         // get a list of product by categoryId
         return productDao.listByCategoryId(categoryId);
@@ -52,13 +52,13 @@ public class CategoriesController
         categoryDao.create(category);
     }
 
-    @PutMapping("")
+    @PutMapping("{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void updateCategory(@PathVariable int id, @RequestBody Category category){
         categoryDao.update(id, category);
     }
 
-    @DeleteMapping("")
+    @DeleteMapping("{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void deleteCategory(@PathVariable int id){
         categoryDao.delete(id);

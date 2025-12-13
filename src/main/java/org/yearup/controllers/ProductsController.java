@@ -76,8 +76,7 @@ public class ProductsController
 
     @PutMapping("{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void updateProduct(@PathVariable int id, @RequestBody Product product)
-    {
+    public void updateProduct(@PathVariable int id, @RequestBody Product product){
         try
         {
             productDao.update(id, product);
@@ -90,8 +89,7 @@ public class ProductsController
 
     @DeleteMapping("{id}")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public void deleteProduct(@PathVariable int id)
-    {
+    public void deleteProduct(@PathVariable int id) {
         try
         {
             var product = productDao.getById(id);

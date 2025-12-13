@@ -1,6 +1,5 @@
 package org.yearup.data.mysql;
 
-import org.apache.ibatis.jdbc.SQL;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
@@ -8,10 +7,7 @@ import org.yearup.data.CategoryDao;
 import org.yearup.models.Category;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -106,14 +102,14 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao {
                 UPDATE
                     categories
                 SET
-                    Category_ID = COALESCE(?, Category_ID)
-                    Name = COALESCE(?, Name)
+                    Category_ID = COALESCE(?, Category_ID),
+                    Name = COALESCE(?, Name),
                     Description = COALESCE(?, Description)                    
                 WHERE
                     Category_ID = ?
                 """)){
             if(category.getCategoryId() == null || category.getCategoryId() == 0){
-                q.setNull(1,category.getCategoryId());
+                q.setNull(1, Types.INTEGER);
             }else{
                 q.setInt(1, category.getCategoryId());
             }
@@ -121,6 +117,7 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao {
             q.setString(3, category.getDescription());
 
             q.setInt(4, categoryId);
+
             q.executeUpdate();
         }catch(SQLException e){
             System.out.println("Error updating category");
