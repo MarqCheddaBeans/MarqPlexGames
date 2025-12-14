@@ -5,12 +5,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import org.yearup.data.ProductDao;
-import org.yearup.data.ShoppingCartDao;
-import org.yearup.data.UserDao;
+import org.yearup.data.*;
 import org.yearup.models.*;
 
+import java.math.BigDecimal;
 import java.security.Principal;
+import java.util.HashMap;
+import java.util.Map;
 
 // convert this class to a REST controller
 @RestController
@@ -24,12 +25,17 @@ public class ShoppingCartController
     private ShoppingCartDao shoppingCartDao;
     private UserDao userDao;
     private ProductDao productDao;
+    private ProfileDao profileDao;
+    private OrderDao orderDao;
 
     @Autowired
-    public ShoppingCartController(ShoppingCartDao shoppingCartDao, UserDao userDao, ProductDao productDao) {
+    public ShoppingCartController(ShoppingCartDao shoppingCartDao, UserDao userDao, ProductDao productDao, ProfileDao profileDao, OrderDao orderDao) {
         this.shoppingCartDao = shoppingCartDao;
         this.userDao = userDao;
         this.productDao = productDao;
+        this.profileDao = profileDao;
+        this.orderDao = orderDao;
+
     }
 
     @GetMapping("")
@@ -95,5 +101,23 @@ public class ShoppingCartController
         return new ShoppingCart();
     }
 
+    @PostMapping("/checkout")
+    public Map<String, Object> checkout(Principal principal){
+        User user = userDao.getByUserName(principal.getName());
+        Profile profile = profileDao.getProfileByUserID(user.getId());
+        ShoppingCart cart = shoppingCartDao.getByUserId(user.getId());
 
+
+        BigDecimal total = cart.getTotal();
+
+        orderDao.checkout(profile,cart);
+
+        shoppingCartDao.clearCart(user.getId());
+
+        Map<String, Object> receipt = new HashMap<>();
+        receipt.put("total", total);
+        receipt.put("message", "Checkout Successful!");
+
+        return receipt;
+    }
 }
