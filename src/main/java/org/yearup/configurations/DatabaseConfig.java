@@ -18,13 +18,14 @@ public class DatabaseConfig
     }
 
     @Autowired
-    public DatabaseConfig(@Value("${datasource.url}") String url,
-                          @Value("${datasource.username}") String username,
-                          @Value("${datasource.password}") String password)
-    {
+    public DatabaseConfig(@Value("${datasource.url}")String url) {
+
+        String userName = System.getProperty("dbUsername");
+        String password = System.getProperty("dbPassword");
+
         basicDataSource = new BasicDataSource();
         basicDataSource.setUrl(url);
-        basicDataSource.setUsername(username);
+        basicDataSource.setUsername(userName);
         basicDataSource.setPassword(password);
     }
 

@@ -13,4 +13,5 @@ public interface ShoppingCartDao
     void clearCart(int userID);
 
     public void editCart(int productID, int userID,int quantity);
+
 }

@@ -131,4 +131,5 @@ public class MySqlShoppingCartDao extends MySqlDaoBase implements ShoppingCartDa
             System.out.println("Error removing from cart" + e);
         }
     }
+
 }

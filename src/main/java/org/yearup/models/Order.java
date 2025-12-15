@@ -12,11 +12,11 @@ public class Order {
     private String city;
     private String state;
     private String zip;
-    private BigDecimal amount;
+    private BigDecimal total;
 
     public Order() {}
 
-    public Order(Integer orderID, Integer userID, LocalDate date, String address, String city, String state, String zip, BigDecimal amount) {
+    public Order(Integer orderID, Integer userID, LocalDate date, String address, String city, String state, String zip, BigDecimal total) {
         this.orderID = orderID;
         this.userID = userID;
         this.date = date;
@@ -24,7 +24,7 @@ public class Order {
         this.city = city;
         this.state = state;
         this.zip = zip;
-        this.amount = amount;
+        this.total = total;
     }
 
     public Integer getOrderID() {
@@ -83,11 +83,11 @@ public class Order {
         this.zip = zip;
     }
 
-    public BigDecimal getAmount() {
-        return amount;
+    public BigDecimal getTotal() {
+        return total;
     }
 
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
+    public void setTotal(BigDecimal total) {
+        this.total = total;
     }
 }

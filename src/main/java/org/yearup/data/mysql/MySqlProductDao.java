@@ -204,6 +204,30 @@ public class MySqlProductDao extends MySqlDaoBase implements ProductDao {
         }
     }
 
+    @Override
+    public void updateStock(int productId, int quantity) {
+        try(Connection c = ds.getConnection();
+        PreparedStatement q = c.prepareStatement("""
+                UPDATE products
+                SET stock = stock - ?
+                WHERE product_id = ?
+                AND stock >= ?
+                """)){
+            q.setInt(1, quantity);
+            q.setInt(2, productId);
+            q.setInt(3, quantity);
+
+            int rows = q.executeUpdate();
+
+            if(rows == 0){
+                throw new RuntimeException("Were all out of product # " + productId);
+            }
+
+        }catch(SQLException e){
+            System.out.println("Error updating stock " + e);
+        }
+    }
+
     protected static Product mapRow(ResultSet row) throws SQLException {
         int productId = row.getInt("product_id");
         String name = row.getString("name");

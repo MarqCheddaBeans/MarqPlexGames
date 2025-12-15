@@ -19,31 +19,32 @@ import java.util.Map;
 @PreAuthorize("hasAnyRole('USER','ADMIN')")
 @RequestMapping("/cart")
 @CrossOrigin
-public class ShoppingCartController
-{
+public class ShoppingCartController {
     // a shopping cart requires
     private ShoppingCartDao shoppingCartDao;
     private UserDao userDao;
     private ProductDao productDao;
     private ProfileDao profileDao;
     private OrderDao orderDao;
+    //Handle checkout logic
+    private CheckoutService checkoutService;
 
+    //Autowire will automatically inject instances of these daos
     @Autowired
-    public ShoppingCartController(ShoppingCartDao shoppingCartDao, UserDao userDao, ProductDao productDao, ProfileDao profileDao, OrderDao orderDao) {
+    public ShoppingCartController(ShoppingCartDao shoppingCartDao, UserDao userDao, ProductDao productDao, ProfileDao profileDao, OrderDao orderDao,CheckoutService checkoutService) {
         this.shoppingCartDao = shoppingCartDao;
         this.userDao = userDao;
         this.productDao = productDao;
         this.profileDao = profileDao;
         this.orderDao = orderDao;
-
+        this.checkoutService = checkoutService;
     }
 
+    //Gets the current users shoppingcart
     @GetMapping("")
     // each method in this controller requires a Principal object as a parameter
-    public ShoppingCart getCart(Principal principal)
-    {
-        try
-        {
+    public ShoppingCart getCart(Principal principal){
+        try{
             // get the currently logged in username
             String userName = principal.getName();
             // find database user by userId
@@ -59,10 +60,9 @@ public class ShoppingCartController
         }
     }
 
-    // add a POST method to add a product to the cart - the url should be
+    //Adds a product to the cart
     @PostMapping("/products/{id}")
     @ResponseStatus(value = HttpStatus.CREATED)
-    // https://localhost:8080/cart/products/15 (15 is the productId to be added
     public ShoppingCart addToCart(Principal principal, @PathVariable int id){
         String userName = principal.getName();
         User user = userDao.getByUserName(userName);
@@ -74,9 +74,7 @@ public class ShoppingCartController
     }
 
 
-    // add a PUT method to update an existing product in the cart - the url should be
-    // https://localhost:8080/cart/products/15 (15 is the productId to be updated)
-    // the BODY should be a ShoppingCartItem - quantity is the only value that will be updated
+    // updates the quantity of and item the cart
     @PutMapping("/products/{id}")
     public ShoppingCart updateQuantity(Principal principal, @PathVariable int id, @RequestBody ShoppingCartItem item){
         String userName = principal.getName();
@@ -88,8 +86,7 @@ public class ShoppingCartController
         return shoppingCartDao.getByUserId(userId);
     }
 
-    // add a DELETE method to clear all products from the current users cart
-    // https://localhost:8080/cart
+    //clears the users cart
     @DeleteMapping("")
     public ShoppingCart clearCart(Principal principal){
         String userName = principal.getName();
@@ -101,23 +98,18 @@ public class ShoppingCartController
         return new ShoppingCart();
     }
 
+    //endpoint to allow user to checkout
     @PostMapping("/checkout")
     public Map<String, Object> checkout(Principal principal){
-        User user = userDao.getByUserName(principal.getName());
-        Profile profile = profileDao.getProfileByUserID(user.getId());
-        ShoppingCart cart = shoppingCartDao.getByUserId(user.getId());
 
+        String userName = principal.getName();
+        User user = userDao.getByUserName(userName);
 
-        BigDecimal total = cart.getTotal();
+        BigDecimal total = checkoutService.checkout(user.getId());
 
-        orderDao.checkout(profile,cart);
+        Map<String, Object> output = new HashMap<>();
+        output.put("total", total);
 
-        shoppingCartDao.clearCart(user.getId());
-
-        Map<String, Object> receipt = new HashMap<>();
-        receipt.put("total", total);
-        receipt.put("message", "Checkout Successful!");
-
-        return receipt;
+        return output;
     }
 }
