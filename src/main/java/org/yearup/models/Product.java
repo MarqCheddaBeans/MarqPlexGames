@@ -4,19 +4,19 @@ import java.math.BigDecimal;
 
 public class Product{
 
-    private int productId;
+    private Integer productId;
     private String name;
     private BigDecimal price;
-    private int categoryId;
+    private Integer categoryId;
     private String description;
     private String subCategory;
-    private int stock;
-    private boolean isFeatured;
+    private Integer stock;
+    private Boolean isFeatured;
     private String imageUrl;
 
     public Product(){}
 
-    public Product(int productId, String name, BigDecimal price, int categoryId, String description, String subCategory, int stock, boolean isFeatured, String imageUrl) {
+    public Product(Integer productId, String name, BigDecimal price, Integer categoryId, String description, String subCategory, Integer stock, Boolean isFeatured, String imageUrl) {
         this.productId = productId;
         this.name = name;
         this.price = price;
@@ -28,12 +28,12 @@ public class Product{
         this.imageUrl = imageUrl;
     }
 
-    public int getProductId()
+    public Integer getProductId()
     {
         return productId;
     }
 
-    public void setProductId(int productId)
+    public void setProductId(Integer productId)
     {
         this.productId = productId;
     }
@@ -58,12 +58,12 @@ public class Product{
         this.price = price;
     }
 
-    public int getCategoryId()
+    public Integer getCategoryId()
     {
         return categoryId;
     }
 
-    public void setCategoryId(int categoryId)
+    public void setCategoryId(Integer categoryId)
     {
         this.categoryId = categoryId;
     }
@@ -88,22 +88,22 @@ public class Product{
         this.subCategory = subCategory;
     }
 
-    public int getStock()
+    public Integer getStock()
     {
         return stock;
     }
 
-    public void setStock(int stock)
+    public void setStock(Integer stock)
     {
         this.stock = stock;
     }
 
-    public boolean isFeatured()
+    public Boolean isFeatured()
     {
         return isFeatured;
     }
 
-    public void setFeatured(boolean featured)
+    public void setFeatured(Boolean featured)
     {
         isFeatured = featured;
     }

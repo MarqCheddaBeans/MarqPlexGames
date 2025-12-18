@@ -37,13 +37,13 @@ public class CheckoutService {
         //Retrieve current users profile for their information
         Profile profile = profileDao.getProfileByUserID(userId);
 
-        //Insert an order into the database with retrieved information
-        orderDao.createOrder(profile,cart);
+        //Insert an order into the database with retrieved information, will return the orderId for us to add into next database
+        int orderId = orderDao.createOrder(profile,cart);
 
         //Loop through cart items, reduce quantity for each product and reflect to databsae
         cart.getItems().values().forEach(item -> {
-            productDao.updateStock(item.getProductId(), item.getQuantity());
-            orderDao.addOrderToDatabase(userId, item);
+            orderDao.updateStock(item.getProductId(), item.getQuantity());
+            orderDao.addOrderToDatabase(orderId, item);
         });
 
         //after purchase complete, clear the users cart

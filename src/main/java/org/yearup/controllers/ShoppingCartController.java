@@ -17,7 +17,7 @@ import java.util.Map;
 @RestController
 // only logged in users should have access to these actions
 @PreAuthorize("hasAnyRole('USER','ADMIN')")
-@RequestMapping("/cart")
+@RequestMapping("cart")
 @CrossOrigin
 public class ShoppingCartController {
     // a shopping cart requires
@@ -61,7 +61,7 @@ public class ShoppingCartController {
     }
 
     //Adds a product to the cart
-    @PostMapping("/products/{id}")
+    @PostMapping("/product/{id}")
     @ResponseStatus(value = HttpStatus.CREATED)
     public ShoppingCart addToCart(Principal principal, @PathVariable int id){
         String userName = principal.getName();
@@ -75,7 +75,7 @@ public class ShoppingCartController {
 
 
     // updates the quantity of and item the cart
-    @PutMapping("/products/{id}")
+    @PutMapping("/product/{id}")
     public ShoppingCart updateQuantity(Principal principal, @PathVariable int id, @RequestBody ShoppingCartItem item){
         String userName = principal.getName();
         User user = userDao.getByUserName(userName);

@@ -24,7 +24,7 @@ public class MySqlProductDao extends MySqlDaoBase implements ProductDao {
         String sql = "SELECT * FROM products " +
                 "WHERE (category_id = ? OR ? = -1) " +
                 "   AND (price >= ? OR ? = -1) " +
-                "   AND (price <= ? OR ? = -1)" +
+                "   AND (price >= ? OR ? = -1) " +
                 "   AND (subcategory = ? OR ? = '') ";
 
         categoryId = categoryId == null ? -1 : categoryId;
@@ -67,9 +67,9 @@ public class MySqlProductDao extends MySqlDaoBase implements ProductDao {
         String sql = "SELECT * FROM products " +
                     " WHERE category_id = ? ";
 
-        try (Connection connection = getConnection())
+        try (Connection connection = getConnection();
+            PreparedStatement statement = connection.prepareStatement(sql))
         {
-            PreparedStatement statement = connection.prepareStatement(sql);
             statement.setInt(1, categoryId);
 
             ResultSet row = statement.executeQuery();
@@ -82,7 +82,7 @@ public class MySqlProductDao extends MySqlDaoBase implements ProductDao {
         }
         catch (SQLException e)
         {
-            throw new RuntimeException(e);
+            System.out.println("Error listing product by categoryid " + e);
         }
 
         return products;
@@ -154,27 +154,29 @@ public class MySqlProductDao extends MySqlDaoBase implements ProductDao {
     @Override
     public void update(int productId, Product product) {
         String sql = "UPDATE products" +
-                " SET name = ? " +
-                "   , price = ? " +
-                "   , category_id = ? " +
-                "   , description = ? " +
-                "   , subcategory = ? " +
-                "   , image_url = ? " +
-                "   , stock = ? " +
-                "   , featured = ? " +
+                " SET name = COALESCE(?, name) " +
+                "   , price = COALESCE(?, price) " +
+                "   , category_id = COALESCE(?,category_id) " +
+                "   , description = COALESCE(?,description) " +
+                "   , subcategory = COALESCE(?, subcategory) " +
+                "   , image_url = COALESCE(?, image_url) " +
+                "   , stock = COALESCE(?, stock) " +
+                "   , featured = COALESCE(?, featured) " +
                 " WHERE product_id = ?;";
 
-        try (Connection connection = getConnection())
-        {
-            PreparedStatement statement = connection.prepareStatement(sql);
+        try (Connection connection = getConnection();
+        PreparedStatement statement = connection.prepareStatement(sql)
+        ){
+
+            //Set in the fields, need to use setObject to allow null to pass through
             statement.setString(1, product.getName());
             statement.setBigDecimal(2, product.getPrice());
-            statement.setInt(3, product.getCategoryId());
+            statement.setObject(3, product.getCategoryId());
             statement.setString(4, product.getDescription());
             statement.setString(5, product.getSubCategory());
             statement.setString(6, product.getImageUrl());
-            statement.setInt(7, product.getStock());
-            statement.setBoolean(8, product.isFeatured());
+            statement.setObject(7, product.getStock());
+            statement.setObject(8, product.isFeatured());
             statement.setInt(9, productId);
 
             statement.executeUpdate();
@@ -201,30 +203,6 @@ public class MySqlProductDao extends MySqlDaoBase implements ProductDao {
         catch (SQLException e)
         {
             throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public void updateStock(int productId, int quantity) {
-        try(Connection c = ds.getConnection();
-        PreparedStatement q = c.prepareStatement("""
-                UPDATE products
-                SET stock = stock - ?
-                WHERE product_id = ?
-                AND stock >= ?
-                """)){
-            q.setInt(1, quantity);
-            q.setInt(2, productId);
-            q.setInt(3, quantity);
-
-            int rows = q.executeUpdate();
-
-            if(rows == 0){
-                throw new RuntimeException("Were all out of product # " + productId);
-            }
-
-        }catch(SQLException e){
-            System.out.println("Error updating stock " + e);
         }
     }
 

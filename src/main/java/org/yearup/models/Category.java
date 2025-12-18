@@ -1,17 +1,14 @@
 package org.yearup.models;
 
-public class Category
-{
+public class Category {
+
     private Integer categoryId;
     private String name;
     private String description;
 
-    public Category()
-    {
-    }
+    public Category(){}
 
-    public Category(Integer categoryId, String name, String description)
-    {
+    public Category(Integer categoryId, String name, String description) {
         this.categoryId = categoryId;
         this.name = name;
         this.description = description;
@@ -46,4 +43,5 @@ public class Category
     {
         this.description = description;
     }
+
 }

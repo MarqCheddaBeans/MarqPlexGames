@@ -15,13 +15,13 @@ import java.util.List;
 public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao {
 
 
-    public MySqlCategoryDao(DataSource ds)
-    {
+    public MySqlCategoryDao(DataSource ds){
         super(ds);
     }
 
     @Override
     public List<Category> getAllCategories() {
+
         List<Category> categories = new ArrayList<>();
 
         try(
@@ -41,7 +41,7 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao {
                 categories.add(cat);
             }
         }catch(SQLException e){
-            System.out.println("Error getting all categories");
+            System.out.println("Error getting all categories " + e);
         }
 
         return categories;
@@ -49,28 +49,32 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao {
 
     @Override
     public Category getById(int categoryId) {
+
         Category cat = new Category();
 
         try(Connection c = ds.getConnection();
         PreparedStatement q = c.prepareStatement("""
-                SELECT 
+                SELECT
                     category_id, name, description
-                FROM 
+                FROM
                     categories
-                WHERE 
+                WHERE
                     category_id = ?
                 """)){
             q.setInt(1,categoryId);
 
-            ResultSet r = q.executeQuery();
-
-            if(r.next()){
-                cat.setCategoryId(r.getInt("Category_id"));
-                cat.setName(r.getString("Name"));
-                cat.setDescription(r.getString("Description"));
-            }else{
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            try(
+                    ResultSet r = q.executeQuery()
+                    ){
+                if(r.next()){
+                    cat.setCategoryId(r.getInt("Category_id"));
+                    cat.setName(r.getString("Name"));
+                    cat.setDescription(r.getString("Description"));
+                }else{
+                    throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+                }
             }
+
         }catch(SQLException e){
             System.out.println("Error getting category with id: " + categoryId);
         }
@@ -104,7 +108,7 @@ public class MySqlCategoryDao extends MySqlDaoBase implements CategoryDao {
                 SET
                     Category_ID = COALESCE(?, Category_ID),
                     Name = COALESCE(?, Name),
-                    Description = COALESCE(?, Description)                    
+                    Description = COALESCE(?, Description)
                 WHERE
                     Category_ID = ?
                 """)){
