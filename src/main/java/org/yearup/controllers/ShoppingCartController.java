@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.yearup.data.*;
 import org.yearup.models.*;
+import org.yearup.service.CheckoutService;
 
 import java.math.BigDecimal;
 import java.security.Principal;
@@ -61,7 +62,7 @@ public class ShoppingCartController {
     }
 
     //Adds a product to the cart
-    @PostMapping("/product/{id}")
+    @PostMapping("products/{id}")
     @ResponseStatus(value = HttpStatus.CREATED)
     public ShoppingCart addToCart(Principal principal, @PathVariable int id){
         String userName = principal.getName();
@@ -74,8 +75,8 @@ public class ShoppingCartController {
     }
 
 
-    // updates the quantity of and item the cart
-    @PutMapping("/product/{id}")
+    // updates the quantity of an item the cart
+    @PutMapping("products/{id}")
     public ShoppingCart updateQuantity(Principal principal, @PathVariable int id, @RequestBody ShoppingCartItem item){
         String userName = principal.getName();
         User user = userDao.getByUserName(userName);
@@ -99,7 +100,7 @@ public class ShoppingCartController {
     }
 
     //endpoint to allow user to checkout
-    @PostMapping("/checkout")
+    @PostMapping("checkout")
     public Map<String, Object> checkout(Principal principal){
 
         String userName = principal.getName();
@@ -108,6 +109,7 @@ public class ShoppingCartController {
         BigDecimal total = checkoutService.checkout(user.getId());
 
         Map<String, Object> output = new HashMap<>();
+
         output.put("total", total);
 
         return output;

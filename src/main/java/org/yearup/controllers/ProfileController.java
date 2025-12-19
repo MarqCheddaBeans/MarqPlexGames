@@ -13,7 +13,7 @@ import java.security.Principal;
 @RestController
 // only logged in users should have access to these actions
 @PreAuthorize("hasAnyRole('USER','ADMIN')")
-@RequestMapping("/profile")
+@RequestMapping("profile")
 @CrossOrigin
 public class ProfileController {
 
@@ -31,6 +31,7 @@ public class ProfileController {
     //Endpoint to display profile
     @GetMapping("")
     public Profile getProfile(Principal principal){
+
         String userName = principal.getName();
         User user = userDao.getByUserName(userName);
         int userId = user.getId();
